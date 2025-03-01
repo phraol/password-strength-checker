@@ -2,7 +2,7 @@
 A simple tool to evaluate password strength in real-time.
 
 ## How to Use
-1. Clone the repo: 
+1. Clone the repo: `git clone https://github.com/phraol/password-strength-checker.git`
 2. Open `index.html` in a browser.
 3. Type a password to see its strength.
 
