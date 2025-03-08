@@ -4,15 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Strength Checker</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .strength-bar-container {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .strength-bar {
+            width: 0;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        /* Strength levels */
+        .weak { background-color: #ff4d4d; }
+        .medium { background-color: #ffcc00; }
+        .strong { background-color: #00cc00; }
+
+        /* Animation for container */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: slideIn 0.5s ease-out;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Password Strength Checker</h1>
-        <input type="password" id="password" placeholder="Enter your password">
-        <div class="strength-bar" id="strength-bar"></div>
+        <div class="input-wrapper">
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <div class="strength-bar-container">
+            <div class="strength-bar" id="strength-bar"></div>
+        </div>
         <p id="feedback" class="feedback"></p>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('password');
+            const strengthBar = document.getElementById('strength-bar');
+            const feedback = document.getElementById('feedback');
+
+            passwordInput.addEventListener('input', () => {
+                const password = passwordInput.value;
+                const strength = checkPasswordStrength(password);
+                
+                updateStrengthBar(strength);
+                updateFeedback(strength);
+            });
+
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                
+                if (password.length >= 8) strength += 25;
+                if (password.length >= 12) strength += 25;
+                if (/[A-Z]/.test(password)) strength += 15;
+                if (/[a-z]/.test(password)) strength += 15;
+                if (/[0-9]/.test(password)) strength += 10;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+                
+                return Math.min(strength, 100);
+            }
+
+            function updateStrengthBar(strength) {
+                strengthBar.style.width = `${strength}%`;
+                strengthBar.classList.remove('weak', 'medium', 'strong');
+                
+                if (strength <= 33) {
+                    strengthBar.classList.add('weak');
+                } else if (strength <= 66) {
+                    strengthBar.classList.add('medium');
+                } else {
+                    strengthBar.classList.add('strong');
+                }
+            }
+
+            function updateFeedback(strength) {
+                if (strength === 0) {
+                    feedback.textContent = 'Enter a password';
+                } else if (strength <= 33) {
+                    feedback.textContent = 'Weak: Add more characters & variety';
+                } else if (strength <= 66) {
+                    feedback.textContent = 'Medium: Try special characters';
+                } else {
+                    feedback.textContent = 'Strong: Excellent password!';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
